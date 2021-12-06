@@ -1,0 +1,23 @@
+server:
+  port: 8088
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        ddl-auto: create-drop
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem:test
+      driver-class-name: org.h2.Driver
+  thymeleaf:
+    cache: false
+#
+#logging:
+#  config: classpath:logback.xml
