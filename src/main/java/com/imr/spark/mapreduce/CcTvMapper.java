@@ -5,8 +5,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 public class CcTvMapper extends Mapper<Object, Text,Text, IntWritable> {
 
@@ -15,8 +13,10 @@ public class CcTvMapper extends Mapper<Object, Text,Text, IntWritable> {
 
     @Override
     protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-        List<String> adminStrs = Arrays.asList(value.toString().split("\t"));
-        word.set(adminStrs.get(0));
+        // 관리 기관명 추출
+        String[] strs = value.toString().split("\t");
+        word.set(strs[0]);
+
         context.write(word, one);
     }
 }

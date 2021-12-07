@@ -1,24 +1,37 @@
 package com.imr.spark;
 
-import org.apache.spark.SparkConf;
-import org.apache.spark.SparkContext;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.imr.spark.mapreduce.CcTvMapper;
+import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.imr.spark.mapreduce.CctvReducer;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class SparkApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
-        SpringApplication.run(SparkApplication.class, args);
+        Configuration conf = new Configuration();
+
+        Job job = Job.getInstance(conf, "spark");
+        job.setJar("spark.jar");
+
+        job.setMapperClass(CcTvMapper.class);
+        job.setCombinerClass(CctvReducer.class);
+        job.setReducerClass(CctvReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(job, new Path("/user/cctv/"));
+        FileOutputFormat.setOutputPath(job, new Path("/user/cctv_output"));
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
-
-
-
-
 }
